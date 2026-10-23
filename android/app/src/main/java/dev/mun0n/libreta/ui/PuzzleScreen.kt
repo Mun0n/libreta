@@ -9,12 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,10 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.mun0n.libreta.Copy
@@ -174,31 +177,68 @@ private fun PuzzleBody(
 @Composable
 private fun WordList(puzzle: Puzzle, current: CurrentPuzzle, modifier: Modifier) {
     val found = current.found.associateBy { it.word }
-    Column(
-        modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        for (word in puzzle.placed) {
-            val mark = found[word.word]?.let { markFor(current.found, word.word) }
-            val description = if (mark == null) word.display else "${word.display}, encontrada"
-            Box(
-                Modifier
-                    .padding(vertical = 2.dp)
-                    .background(mark?.wash ?: Paper, RoundedCornerShape(8.dp))
-                    .semantics { contentDescription = description }
-                    .padding(horizontal = 10.dp, vertical = 4.dp),
-            ) {
-                Text(word.display, fontFamily = Atkinson, fontSize = 26.sp, color = Ink)
-                if (mark != null) {
-                    Canvas(Modifier.matchParentSize()) {
-                        val y = size.height / 2f
-                        drawLine(
-                            color = mark.strike,
-                            start = Offset(0f, y),
-                            end = Offset(size.width, y),
-                            strokeWidth = 4f,
-                        )
+    BoxWithConstraints(modifier) {
+        val words = puzzle.placed
+        val count = words.size.coerceAtLeast(1)
+        val longest = words.maxOfOrNull { it.display.length }?.coerceAtLeast(1) ?: 1
+        val columns = if (listFont(maxHeight, maxWidth, count, longest) < 22.dp) 2 else 1
+        val rows = (count + columns - 1) / columns
+        val font = listFont(maxHeight, maxWidth / columns, rows, longest).coerceIn(16.dp, 34.dp)
+        val fontSize = with(LocalDensity.current) { font.toSp() }
+        Column(Modifier.fillMaxSize()) {
+            words.chunked(columns).forEach { rowWords ->
+                Row(
+                    Modifier.fillMaxWidth().weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    rowWords.forEach { word ->
+                        WordChip(word.display, found[word.word]?.let { markFor(current.found, word.word) }, fontSize, Modifier.weight(1f))
                     }
+                    repeat(columns - rowWords.size) {
+                        Spacer(Modifier.weight(1f))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Size the list so every word is on the sheet. Sp would grow again with the system font and bring the scroll back. */
+private fun listFont(height: Dp, width: Dp, rows: Int, longest: Int): Dp {
+    val fromHeight = (height / rows - 8.dp) / 1.2f
+    val fromWidth = (width - 28.dp) / (longest * 0.68f)
+    return minOf(fromHeight, fromWidth, 34.dp)
+}
+
+@Composable
+private fun WordChip(display: String, mark: Mark?, fontSize: TextUnit, modifier: Modifier) {
+    val description = if (mark == null) display else "$display, encontrada"
+    Box(modifier, contentAlignment = Alignment.CenterStart) {
+        Box(
+            Modifier
+                .background(mark?.wash ?: Paper, RoundedCornerShape(8.dp))
+                .semantics { contentDescription = description }
+                .padding(horizontal = 8.dp, vertical = 1.dp),
+        ) {
+            Text(
+                display,
+                fontFamily = Atkinson,
+                fontSize = fontSize,
+                lineHeight = fontSize,
+                color = Ink,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Clip,
+            )
+            if (mark != null) {
+                Canvas(Modifier.matchParentSize()) {
+                    val y = size.height / 2f
+                    drawLine(
+                        color = mark.strike,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = 3f,
+                    )
                 }
             }
         }
