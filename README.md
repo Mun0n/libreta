@@ -2,7 +2,9 @@
 
 A word search that feels like pen on paper. No ads, no account, no timer.
 
-Spanish puzzles, large type, and a board you can play with a finger, a mouse, or an Apple Pencil. After the first load it works offline.
+Android app, Kotlin, for a tablet held in landscape. Spanish puzzles, large type, and a board you play with a finger or a stylus. It does not use the network.
+
+The same rules also exist as a browser build at the repo root (`npm run dev`). The tablet app is `android/`.
 
 ![Home, with the unfinished puzzle one tap away](docs/home.jpg)
 
@@ -17,7 +19,7 @@ The interface is built for older adults, including people living with Alzheimer'
 - One job on each screen. The unfinished puzzle is a single button, **Seguir**.
 - Large type ([Atkinson Hyperlegible](https://www.brailleinstitute.org/freefont/)) and large buttons with words, not icons alone.
 - A wrong stroke fades out. There is no buzzer, no red cross, no score, and no clock.
-- Drag through the letters, or tap the first letter and then the last. The second path is there because a long drag is hard with a tremor.
+- Drag through the letters, or tap the first letter and then the last. The second path is there because a long drag is hard with a tremor. A finger and a stylus are the same pointer.
 - **Pista** circles the first letter of a missing word. **Enséñame una** draws that word in pencil. Neither costs anything.
 - Progress stays on the device. Nothing is uploaded.
 
@@ -27,7 +29,7 @@ This is a pastime, not a treatment and not a medical device. There is no good ev
 
 The big Spanish word-search apps (Blackout's *Sopas de Letras*, Vita Word Search) are the reference for themes, an endless supply of grids, and selecting a word by dragging. They also ship ads, coins, level gates, and a difficulty that climbs on its own. Those are the parts that break a calm session, so they are not in here.
 
-Pinch-zoom is off on purpose. An accidental pinch leaves a person inside a zoomed page with no obvious way back.
+The activity is locked to landscape. There is no pinch-zoom. An accidental pinch, or a turn into portrait, leaves a person outside the sheet with no obvious way back.
 
 ## Play
 
@@ -48,51 +50,50 @@ Sound is off until it is turned on. There is no account to configure.
 
 ## How a sheet is made
 
-`generate` in `src/game/generate.ts` is deterministic. The same seed is the same sheet, which is what **Seguir** restores.
+`generate` in `android/app/src/main/java/dev/mun0n/libreta/game/Generate.kt` is deterministic. The same seed is the same sheet, which is what **Seguir** restores. The browser copy in `src/game/generate.ts` uses the same mulberry32.
 
 - A seeded shuffle picks words that fit the grid (length 3 to the grid size).
 - Words may cross when the letter agrees. A different letter blocks the crossing.
 - Empty cells are filled from Spanish letter frequencies. The filler does not invent K or W.
 - Accents are removed in the grid (`canción` → `CANCION`). **Ñ stays Ñ.** The list keeps the accents.
 
-Fourteen themes live in `src/data/themes.ts`, each with at least 60 ordinary words. Drag direction locking lives in `src/game/select.ts`.
+Fourteen themes live in `android/app/src/main/java/dev/mun0n/libreta/data/Themes.kt`, each with at least 60 ordinary words. Drag direction locking lives in `Select.kt`.
 
 ## Project layout
 
 ```
-src/game/generate.ts    placement, filler, seed
-src/game/select.ts      straight-line drag and exact match
-src/game/normalize.ts   accents and Ñ
-src/data/themes.ts      word lists
-src/state/storage.ts    localStorage, versioned
-src/ui/                 sheet, grid, home, settings
+android/app/src/main/java/dev/mun0n/libreta/game/   placement, filler, seed, drag
+android/app/src/main/java/dev/mun0n/libreta/ui/     sheet, grid, home, settings
+android/app/src/main/java/dev/mun0n/libreta/state/  SharedPreferences, versioned
 ```
 
-There is no server. Vite, React, and TypeScript. Workbox precaches the build so the second open does not need a network.
+Jetpack Compose. No server. `minSdk` 26, landscape only, aimed at tablets (`requiresSmallestWidthDp` 600, so Play will not offer it on a phone).
 
 ## Develop
 
+Open `android/` in Android Studio, or from that directory:
+
 ```bash
-npm install
-npm test
-npm run dev
-npm run build
-npm run preview
+./gradlew test assembleDebug
 ```
 
-Tests cover the generator (stable seed, every placed word is readable on its cells, Ñ, words longer than the grid are dropped, a bad crossing is rejected) and the selector (direction lock, exact match, reverse match).
+The debug APK is `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+Tests cover the generator (stable seed, every placed word is readable on its cells, Ñ, words longer than the grid are dropped, a bad crossing is rejected) and the selector (direction lock, exact match, reverse match). The browser build has the same checks: `npm test` at the repo root.
 
 ## Install
 
-A tablet is the right size. On an iPhone, **Ajustes → Letras muy grandes** keeps the letters usable.
+A tablet, in landscape. Plug it in, install the debug APK, and the icon is Libreta. The sheet is the whole screen. **Ajustes → Letras muy grandes** is the 8×8 board.
 
-The short Spanish steps for adding it to an iPad home screen are in [docs/ipad.md](docs/ipad.md).
-
-`npm run build` writes a static site to `dist/`. Host that folder anywhere. The app is a PWA: once it has loaded, the service worker serves it offline.
+The browser build can still be added to an iPad home screen. Those steps are in [docs/ipad.md](docs/ipad.md).
 
 ## Privacy
 
-No account, no analytics, no requests after the app is cached. The current sheet and the count of finished sheets stay in `localStorage` on that device.
+No account, no analytics, no network permission. The current sheet and the count of finished sheets stay in `SharedPreferences` on that device (`libreta.v1`). Fonts are bundled. Atkinson Hyperlegible and Fraunces are SIL Open Font License; the license texts are in `android/third_party/`.
 
 ## License
 

@@ -4,3 +4,9 @@ dev-dist
 .DS_Store
 *.local
 .vite
+android/.gradle
+android/.idea
+android/local.properties
+android/build
+android/app/build
+android/captures
