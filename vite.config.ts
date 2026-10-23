@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Libreta',
-        short_name: 'Libreta',
+        name: 'Sopa de letras',
+        short_name: 'Sopa de letras',
         description: 'Sopas de letras en papel. Sin anuncios, sin cuentas y sin prisa.',
         lang: 'es',
         start_url: '/',

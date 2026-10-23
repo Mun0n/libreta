@@ -1,8 +1,8 @@
-# Poner Libreta en el iPad
+# Poner Sopa de letras en el iPad
 
 Hace falta internet solo la primera vez.
 
-1. Abre Safari y entra en la dirección de Libreta.
+1. Abre Safari y entra en la dirección de Sopa de letras.
 2. Pulsa el botón compartir (el cuadrado con la flecha).
 3. Elige **Añadir a pantalla de inicio**.
 4. Pulsa **Añadir**.

@@ -21,7 +21,6 @@ export function Home({ pending, onResume, onStart, onSettings }: Props) {
       <div className="home">
         <div className="home-top">
           <h1>{copy.appName}</h1>
-          <p className="lede">{copy.subtitle}</p>
           <p className="howto">{copy.howTo}</p>
           {pending ? (
             <button type="button" className="continue" onClick={onResume}>

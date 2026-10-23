@@ -1,6 +1,5 @@
 export const copy = {
-  appName: 'Libreta',
-  subtitle: 'Sopas de letras',
+  appName: 'Sopa de letras',
   howTo: 'Pasa el dedo por las letras, como con el boli.',
   chooseTheme: 'Elige un tema',
   continueWith: (theme: string) => `Seguir con ${theme}`,

@@ -1,4 +1,4 @@
-# Libreta
+# Sopa de letras
 
 A word search that feels like pen on paper. No ads, no account, no timer.
 
@@ -23,7 +23,7 @@ The interface is built for older adults, including people living with Alzheimer'
 - **Pista** circles the first letter of a missing word. **Enséñame una** draws that word in pencil. Neither costs anything.
 - Progress stays on the device. Nothing is uploaded.
 
-This is a pastime, not a treatment and not a medical device. There is no good evidence that word searches change the course of dementia, and Libreta does not claim that they do.
+This is a pastime, not a treatment and not a medical device. There is no good evidence that word searches change the course of dementia, and this app does not claim that they do.
 
 ## What it leaves out
 
@@ -87,7 +87,7 @@ Tests cover the generator (stable seed, every placed word is readable on its cel
 
 ## Install
 
-A tablet, in landscape. Plug it in, install the debug APK, and the icon is Libreta. The sheet is the whole screen. **Ajustes → Letras muy grandes** is the 8×8 board.
+A tablet, in landscape. Plug it in, install the debug APK, and the icon says Sopa de letras. The sheet is the whole screen. **Ajustes → Letras muy grandes** is the 8×8 board.
 
 The browser build can still be added to an iPad home screen. Those steps are in [docs/ipad.md](docs/ipad.md).
 

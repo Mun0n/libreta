@@ -1,8 +1,7 @@
 package dev.mun0n.libreta
 
 object Copy {
-    const val appName = "Libreta"
-    const val subtitle = "Sopas de letras"
+    const val appName = "Sopa de letras"
     const val howTo = "Pasa el dedo por las letras, como con el boli."
     const val chooseTheme = "Elige un tema"
     const val veryWell = "Muy bien"

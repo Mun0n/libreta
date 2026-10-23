@@ -39,7 +39,6 @@ fun HomeScreen(vm: LibretaViewModel, modifier: Modifier = Modifier) {
             .padding(horizontal = 28.dp, vertical = 16.dp),
     ) {
         Text(Copy.appName, fontFamily = Fraunces, fontSize = 56.sp, color = Ink)
-        Text(Copy.subtitle, fontFamily = Atkinson, fontSize = 22.sp, color = InkSoft)
         Text(
             Copy.howTo,
             fontFamily = Atkinson,
